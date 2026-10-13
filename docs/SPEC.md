@@ -1,6 +1,6 @@
 # Implementation Spec: Dhaka Smart Route Finder
 
-এই tab এ website বানানোর পুরো নির্দেশনা আছে, যা VS Code এর Claude Code কে দেওয়ার জন্য লেখা। Markdown হিসেবে export করে repo তে `docs/SPEC.md` নামে রাখো, তারপর Claude Code কে এটা পড়ে কাজ শুরু করতে বলো।
+এই file এ website বানানোর পুরো নির্দেশনা আছে, যা VS Code এর Claude Code কে দেওয়ার জন্য লেখা। Problem আর research question আছে [`PROBLEM_STATEMENT.md`](PROBLEM_STATEMENT.md) এ, আর প্রতিটা weight এর পেছনের data ও source আছে [`CONCEPT.md`](CONCEPT.md) এ।
 
 ## ০. শুরু করার আগে: যা download ও install করতে হবে
 
@@ -85,7 +85,29 @@ Backend Python এ, frontend React এ। একটা কঠিন নিয়
 
 ## ৩. System architecture
 
-&#91;embedded content: system architecture · ৪টা layer\]
+```text
+┌──────────────────────────────────────────────────────────────┐
+│ Frontend (React + Leaflet)                                   │
+│ ControlPanel · AlgorithmPicker · MapView · ResultsTable ·    │
+│ ReplanPanel                                                  │
+└───────────────┬──────────────────────────────▲───────────────┘
+                │ scenario + start/goal (JSON)  │ path, explored, breakdown
+┌───────────────▼──────────────────────────────┴───────────────┐
+│ Backend API (FastAPI, /api/*)                                │
+│ /search · /replan · /nearest-node · /hotspots · /graph/meta  │
+└───────────────┬──────────────────────────────────────────────┘
+┌───────────────▼──────────────────────────────────────────────┐
+│ Engine                                                       │
+│ scenario.py → cost.py (edge_cost, heuristic) → search/ (৭টা) │
+│ replan.py                                                    │
+└───────────────┬──────────────────────────────────────────────┘
+┌───────────────▼──────────────────────────────────────────────┐
+│ Data (server চালুর সময় একবার load)                           │
+│ dhaka_drive.graphml · weights.yaml · hotspots.json           │
+└───────────────▲──────────────────────────────────────────────┘
+                │ project শুরুতে একবার
+   scripts/: prepare_graph.py → map_hotspots.py   (run_experiments.py Engine সরাসরি ব্যবহার করে)
+```
 
 Frontend scenario পাঠায়; backend সেই scenario থেকে cost বানিয়ে search চালায়। Data layer server চালু হওয়ার সময় একবার load হয়, আর offline script গুলো শুধু project শুরুতে একবার চালাতে হয়।
 
@@ -99,7 +121,9 @@ dhaka-smart-route/
 ├── README.md
 ├── .gitignore                   # .venv, node_modules, *.graphml
 ├── docs/
-│   └── SPEC.md                  # এই tab এর export
+│   ├── PROBLEM_STATEMENT.md     # problem, research question, experiment design
+│   ├── CONCEPT.md               # ধারণা, বাস্তব data, source
+│   └── SPEC.md                  # এই file
 ├── backend/
 │   ├── app/
 │   │   ├── main.py              # FastAPI app ও route
@@ -124,7 +148,9 @@ dhaka-smart-route/
 │   │   └── dhaka_drive.graphml  # prepare_graph.py বানাবে (git এ রাখবে না)
 │   ├── scripts/
 │   │   ├── prepare_graph.py     # OSMnx দিয়ে graph download ও attribute যোগ
-│   │   └── map_hotspots.py      # hotspot এর lat/lng → কাছের edge এ flag
+│   │   ├── map_hotspots.py      # hotspot এর lat/lng → কাছের edge এ flag
+│   │   └── run_experiments.py   # সব algorithm × scenario × profile × route চালিয়ে CSV
+│   ├── results/                 # run_experiments.py এর CSV ও summary
 │   ├── tests/
 │   └── requirements.txt
 ├── frontend/
@@ -170,6 +196,8 @@ Graph এর metadata তে `v_max_kmh` রাখতে হবে, যা স�
 - Node এর lat হলো `y`, lng হলো `x`।
 - OSMnx 2.x এ bbox এর ক্রম (left, bottom, right, top), মানে (west, south, east, north) ([changelog](https://data.safetycli.com/changelogs/osmnx))। Place এর নাম দিয়ে ঢাকা ঠিকমতো না এলে bbox ব্যবহার করো।
 - Unprojected graph এ `ox.distance.nearest_nodes` চালাতে scikit-learn লাগে।
+- Download এর পর শুধু largest strongly connected component রাখা হয়। নইলে bbox এর কিনারায় কাটা one-way রাস্তার কারণে এমন node থাকে যেখান থেকে বের হওয়া যায় না, আর সেখানে click করলে algorithm না, data র কারণে `not_found` আসে।
+- OSM এ ঢাকার বেশিরভাগ রাস্তার নাম বাংলায় (যেমন Elevated Expressway = `ঢাকা এলিভেটেড এক্সপ্রেসওয়ে`, tag `motorway`)। নাম দিয়ে খোঁজার সময় বাংলা নামও দেখতে হবে।
 
 ### hotspots.json
 
@@ -201,13 +229,17 @@ Graph এর metadata তে `v_max_kmh` রাখতে হবে, যা স�
 }
 ```
 
-Concept tab এর ২ক অংশের সব hotspot এই ফাইলে যাবে, প্রতিটার সাথে source link। Airport Road এর মত লম্বা রাস্তার জন্য রাস্তা বরাবর কয়েকটা বিন্দু দাও।
+`docs/CONCEPT.md` এর ২ক অংশের সব hotspot এই ফাইলে যাবে, প্রতিটার সাথে source link। Airport Road এর মত লম্বা রাস্তার জন্য রাস্তা বরাবর কয়েকটা বিন্দু দাও।
 
 ### weights.yaml
 
-সব সংখ্যা শুরুর অনুমান, Concept tab এর ২ক আর ৩ নম্বর অংশ থেকে নেওয়া। Code এ কোনো সংখ্যা hardcode করা যাবে না।
+সব সংখ্যা শুরুর অনুমান, `docs/CONCEPT.md` এর ২ক আর ৩ নম্বর অংশ থেকে নেওয়া। Code এ কোনো সংখ্যা hardcode করা যাবে না।
 
 ```yaml
+graph_area:               # prepare_graph.py যে এলাকা নামাবে
+  bbox: {west: 90.33, south: 23.69, east: 90.51, north: 23.90}
+  network_type: drive
+
 road_speeds_kmh:          # v_free, অনুমান
   motorway: 60            # Elevated Expressway; OSM এ আসল tag prepare_graph.py তে দেখে নিতে হবে
   trunk: 40
@@ -242,6 +274,7 @@ work_zone_factor: 2.0
 risk:
   crime:    {day: 1, night: 3, predawn: 5}
   accident: {day: 1, night: 2, predawn: 2}
+risk_ref_length_m: 500    # L_ref: risk প্রতি edge এ না, প্রতি ৫০০ m এ
 risk_bands:
   day:     ["06:00", "19:00"]
   night:   ["19:00", "03:00"]
@@ -274,7 +307,7 @@ Traffic band গুলো দুটো data র উপর দাঁড়ান�
 
 ```latex
 \begin{aligned}
-\text{cost}(u,v,t) &= T(u,v,t) \times \big(1 + \beta \, U(u,v)\big) + \lambda \times \big(R_{crime}(t) + R_{accident}(t)\big) \\
+\text{cost}(u,v,t) &= T(u,v,t) \times \big(1 + \beta \, U(u,v)\big) + \lambda \times \big(R_{crime}(t) + R_{accident}(t)\big) \times \frac{L(u,v)}{L_{ref}} \\
 T(u,v,t) &= \frac{L(u,v)}{v_{free}(u,v)} \times F_{traffic}(t, day) \times F_{rain} \times F_{work}
 \end{aligned}
 ```
@@ -311,7 +344,8 @@ def edge_cost(e, s: Scenario, p: Profile, w: Weights) -> float:
     T = base_min * f_traffic * f_rain * f_work
     U = uncertainty(e, s.month, w)                   # 0, 0.5 বা 1
     R = risk(e, s.time, w)                           # hotspot না হলে 0
-    return T * (1 + p.beta * U) + p.lam * R
+    exposure = e.length_m / w.risk_ref_length_m      # edge কত ছোট করে কাটা তার উপর নির্ভর না করতে
+    return T * (1 + p.beta * U) + p.lam * R * exposure
 
 
 def heuristic(n, goal, g) -> float:
@@ -328,6 +362,7 @@ def heuristic(n, goal, g) -> float:
 - `spillover_edges` হলো বন্ধ node থেকে `spillover_radius_m` এর মধ্যে থাকা edge, যা scenario বানানোর সময় একবার হিসাব হবে।
 - Final path এর প্রতিটা edge এর জন্য factor গুলো আলাদা করে ফেরত দেওয়ার একটা `edge_breakdown()` function থাকবে, যা frontend এর hover এ দেখাবে।
 - `weights.yaml` এর `lambda` Python এ keyword, তাই code এ `lam` নামে load করো।
+- Risk সবসময় `length_m / risk_ref_length_m` দিয়ে গুণ হবে। OSM একটা hotspot কে অনেক edge এ ভাগ করে; প্রতি edge এ পুরো R যোগ করলে একই রাস্তা কয়টা edge এ কাটা তার উপর penalty বদলে যেত।
 
 ## ৭. Search engine (`search/`)
 
@@ -464,7 +499,7 @@ Frontend যাতে সরাসরি আঁকতে পারে, তাই
 
 ### Result টেবিল
 
-Column: algorithm, status, cost (মিনিট), distance (km), nodes expanded, max frontier, runtime (ms)। সবচেয়ে কম cost এর row highlight হবে, আর optimal না হওয়া algorithm (BFS, DFS, IDS, Greedy) এর পাশে ছোট চিহ্ন থাকবে।
+Column: algorithm, status, cost (মিনিট), cost ÷ সেরা cost, distance (km), nodes expanded, max frontier, runtime (ms)। "cost ÷ সেরা cost" হলো ওই run এর optimal algorithm (UCS, A\* বা Bidirectional) এর cost দিয়ে ভাগ; UCS না চালালেও A\* বা Bidirectional থাকলে হিসাব হবে, কোনোটাই না থাকলে "–"। সবচেয়ে কম cost এর row highlight হবে, আর optimal না হওয়া algorithm (BFS, DFS, IDS, Greedy) এর পাশে ছোট চিহ্ন থাকবে।
 
 ### UX এর ছোট নিয়ম
 
@@ -503,7 +538,7 @@ Test গুলো প্রমাণ করবে algorithm ঠিক কাজ 
 
 ### Backend test (pytest)
 
-- **Cost:** হাতে বানানো ছোট graph এ প্রতিটা factor আলাদা করে test: rain band এর সীমা, অবরোধে ∞, ambulance এর gridlock নিয়ম, weekend scale, মধ্যরাত পার হওয়া band
+- **Cost:** হাতে বানানো ছোট graph এ প্রতিটা factor আলাদা করে test: rain band এর সীমা, অবরোধে ∞, ambulance এর gridlock নিয়ম, weekend scale, মধ্যরাত পার হওয়া band, আর একটা hotspot edge কে দুই ভাগ করলে মোট risk penalty একই থাকে
 - **Admissibility:** random ১,০০০ node pair এ h(start) ≤ UCS এর আসল cost
 - **Consistency:** random edge sample এ h(u) ≤ cost(u, v) + h(v)
 - **Optimality:** random ২০০ pair এ UCS, A\* আর Bidirectional এর cost সমান (tolerance 1e-6)
@@ -513,6 +548,16 @@ Test গুলো প্রমাণ করবে algorithm ঠিক কাজ 
 - **API:** `/api/search` আর `/api/replan` এর request ও response schema test
 
 Random test এর seed fix রাখতে হবে, যাতে ফল প্রতিবার একই আসে।
+
+### Experiment runner (`run_experiments.py`)
+
+Website demo এর জন্য, কিন্তু report এর research question (`PROBLEM_STATEMENT.md` এর ৮ নম্বর অংশ) এর উত্তর আসবে এই script থেকে। এটা API ছাড়াই সরাসরি `cost.py` আর `search/` ব্যবহার করবে।
+
+- **Scenario:** স্বাভাবিক দুপুর, peak hour, ভারী বৃষ্টি (৭০ mm), মিছিল (Shahbagh ও Paltan বন্ধ); সংজ্ঞা `weights.yaml` এর মত একটা `experiments.yaml` এ, code এ না
+- **Route:** নিচের calibration টেবিলের ৫টা route, আর fixed seed এ random ৫০টা node pair (seed আর সংখ্যা `experiments.yaml` এ)
+- **Run:** ৭ algorithm × ৪ scenario × ৫ profile × প্রতিটা route, `limits` মেনে
+- **Output:** `results/runs.csv` এ প্রতিটা run এর এক row (algorithm, scenario, profile, route, status, cost, cost ÷ UCS cost, distance, nodes expanded, max frontier, runtime); `results/summary.csv` এ algorithm × scenario অনুযায়ী median ও success rate
+- Random pair থেকে start আর goal এর মধ্যে কোনো পথ না থাকলে সেই pair বাদ দিয়ে নতুন pair নেবে, আর কয়টা বাদ গেল তা log করবে
 
 ### Calibration টেবিল
 
@@ -535,7 +580,7 @@ Random test এর seed fix রাখতে হবে, যাতে ফল প�
 - অবরোধ আগে থেকে জানা যায় না, তাই user কে হাতে চালু করতে হয়।
 - Hotspot তালিকা সময়ের সাথে বদলায়; `hotspots.json` এ version আর source রাখা হয়েছে আপডেটের জন্য।
 - Signal, রিকশা, বা ambulance কে অন্য গাড়ি রাস্তা ছেড়ে দেওয়া আলাদা করে model করা হয়নি।
-- OSM এ কিছু রাস্তা বা one-way তথ্য ভুল থাকতে পারে।
+- OSM এ কিছু রাস্তা বা one-way তথ্য ভুল থাকতে পারে। যেমন উত্তরের BRT Line 3 এর lane OSM এ `motorway` আর কোনো access বাধা ছাড়া, তাই graph এ সাধারণ গাড়িও সেটা ব্যবহার করতে পারে।
 - MVP তে cost রওনা দেওয়ার সময় ধরে হিসাব হয়, তাই লম্বা যাত্রায় মাঝপথের সময়ের traffic পুরোপুরি ধরা পড়ে না।
 
 ## ১৩. Claude Code দিয়ে build plan
@@ -544,10 +589,12 @@ Random test এর seed fix রাখতে হবে, যাতে ফল প�
 
 ### Phase 1: Data ও graph
 
-- [ ] Repo structure বানানো (৪ নম্বর অংশ), `docs/SPEC.md` এ এই tab রাখা
-- [ ] `prepare_graph.py`: OSMnx দিয়ে Dhaka drive network download, `v_free_kmh` আর `road_class` যোগ, `v_max_kmh` metadata, GraphML এ save
-- [ ] `hotspots.json`: Concept tab এর ২ক অংশের সব hotspot, coordinate যাচাই করে, source সহ
-- [ ] `map_hotspots.py`: hotspot থেকে edge flag
+- [x] `docs/`, `CLAUDE.md`, `README.md`, `.gitignore`
+- [ ] বাকি repo structure বানানো (৪ নম্বর অংশ)
+- [x] `prepare_graph.py`: OSMnx দিয়ে Dhaka drive network download, `v_free_kmh` আর `road_class` যোগ, `v_max_kmh` metadata, GraphML এ save
+- [x] `hotspots.json`: `docs/CONCEPT.md` এর ২ক অংশের সব hotspot, coordinate যাচাই করে, source সহ
+- [x] `map_hotspots.py`: hotspot থেকে edge flag
+- [x] `weights.yaml` (prepare_graph.py এর road speed লাগে বলে Phase 1 এ), `config.py`, `graph_store.py`, `geo.py` (haversine), Phase 1 test
 
 ### Phase 2: Cost ও search engine
 
@@ -570,11 +617,12 @@ Random test এর seed fix রাখতে হবে, যাতে ফল প�
 
 - [ ] Trip simulation আর `/api/replan`
 - [ ] Dark mode, loading অবস্থা, error বার্তা
+- [ ] `run_experiments.py` চালিয়ে `results/` এর CSV বানানো
 - [ ] Calibration টেবিল পূরণ, `README.md` এ চালানোর নিয়ম
 
 ### Claude Code কে প্রথম prompt
 
-Repo খুলে এই tab টা `docs/SPEC.md` এ রাখার পর নিচের লেখাটা Claude Code এ paste করো।
+Repo খুলে নিচের লেখাটা Claude Code এ paste করো।
 
 ```text
 docs/SPEC.md পড়ো। এটা Dhaka Smart Route Finder project এর পুরো spec।

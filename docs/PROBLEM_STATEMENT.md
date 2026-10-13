@@ -58,7 +58,7 @@ T(u,v) &= \frac{L(u,v)}{v_{free}(u,v)} \times F_{traffic} \times F_{rain} \times
 | F_work | Road-work slowdown, and the terminal-zone penalty for buses and trucks | ≥ 1 |
 | U | Uncertainty: 1 near blockade-prone intersections, 0.5 at flood hotspots in monsoon, else 0 | [0, 1] |
 | R | R_crime + R_accident for hotspot edges, by time band (day, night, pre-dawn) | ≥ 0 |
-| L_ref | Reference length that turns risk into a per-distance exposure | constant |
+| L_ref | Reference length (500 m, about one crossing of a hotspot) that turns risk into a per-distance exposure, so the penalty does not depend on how finely OSM splits a road into edges | constant |
 
 An edge is **impassable** (c = ∞) if either of its endpoints is blocked, or its rainfall band is above the closure threshold for that profile. All constants live in a configuration file. They are first estimates from news and research sources and will be calibrated against Google Maps travel times.
 

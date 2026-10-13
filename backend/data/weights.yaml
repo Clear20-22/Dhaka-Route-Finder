@@ -1,0 +1,64 @@
+# সব সংখ্যা শুরুর অনুমান, docs/CONCEPT.md এর ২ক আর ৩ নম্বর অংশ থেকে নেওয়া।
+# Calibration (docs/SPEC.md ১১ নম্বর অংশ) এর পর ঠিক করতে হবে।
+
+graph_area:               # prepare_graph.py যে এলাকা নামাবে
+  bbox: {west: 90.33, south: 23.69, east: 90.51, north: 23.90}
+  network_type: drive
+
+road_speeds_kmh:          # v_free, অনুমান
+  motorway: 60            # Elevated Expressway; OSM এ আসল tag prepare_graph.py তে দেখে নিতে হবে
+  trunk: 40
+  primary: 30
+  secondary: 25
+  tertiary: 20
+  residential: 15
+  default: 15
+main_road_types: [motorway, trunk, primary, secondary]
+
+traffic_bands:            # F_traffic, main road, weekday
+  - {from: "22:00", to: "05:00", factor: 1.1}
+  - {from: "05:00", to: "07:00", factor: 1.5}
+  - {from: "07:00", to: "10:00", factor: 4.0}
+  - {from: "10:00", to: "16:00", factor: 3.0}
+  - {from: "16:00", to: "21:00", factor: 5.0}
+  - {from: "21:00", to: "22:00", factor: 2.0}
+local_road_scale: 0.5     # local road: 1 + (F - 1) × 0.5
+weekend_days: [FRI, SAT]
+weekend_scale: 0.5        # weekend: 1 + (F - 1) × 0.5
+
+rain_bands:               # শুধু flood_hotspot edge এ
+  - {max_mm: 25, factor: 1.3}
+  - {max_mm: 60, factor: 3.0}
+  - {max_mm: .inf, factor: .inf}
+flood_recovery_hours: 3
+
+blockade_spillover: 2.0   # বন্ধ মোড়ের পাশের edge এ
+spillover_radius_m: 500
+work_zone_factor: 2.0
+
+risk:
+  crime:    {day: 1, night: 3, predawn: 5}
+  accident: {day: 1, night: 2, predawn: 2}
+risk_ref_length_m: 500    # L_ref: risk প্রতি edge এ না, প্রতি ৫০০ m এ
+risk_bands:
+  day:     ["06:00", "19:00"]
+  night:   ["19:00", "03:00"]
+  predawn: ["03:00", "06:00"]
+
+uncertainty:
+  blockade_prone: 1.0
+  flood_hotspot_monsoon: 0.5
+monsoon_months: [6, 7, 8, 9]
+
+profiles:
+  ambulance:  {lambda: 0.5, beta: 0.5, gridlock_threshold: 4.0, avoid_rain_factor: 3.0, work_zone_extra: 1.5}
+  meeting:    {lambda: 1.0, beta: 1.0}
+  night_solo: {lambda: 5.0, beta: 0.3}
+  general:    {lambda: 1.0, beta: 0.3}
+  bus_truck:  {lambda: 1.0, beta: 0.3, terminal_factor: 1.5}
+
+limits:
+  max_expanded_nodes: 300000
+  timeout_ms: 10000
+  ids_max_depth: 400
+  explored_trace_cap: 50000

@@ -5,3 +5,4 @@ node_modules/
 dist/
 *.graphml
 .DS_Store
+backend/data/osm_cache/

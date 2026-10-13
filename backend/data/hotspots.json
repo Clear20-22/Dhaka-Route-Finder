@@ -1,0 +1,325 @@
+{
+  "version": "2026-10-13",
+  "hotspots": [
+    {
+      "id": "flood-new-market",
+      "type": "flood",
+      "name": "New Market",
+      "lat": 23.7334,
+      "lng": 90.384,
+      "radius_m": 300,
+      "source": "https://www.bssnews.net/js-session/401176/news"
+    },
+    {
+      "id": "flood-green-road-south",
+      "type": "flood",
+      "name": "Green Road (Science Lab end)",
+      "lat": 23.743,
+      "lng": 90.3843,
+      "radius_m": 250,
+      "source": "https://www.bssnews.net/js-session/401176/news"
+    },
+    {
+      "id": "flood-green-road-mid",
+      "type": "flood",
+      "name": "Green Road (Panthapath crossing)",
+      "lat": 23.7489,
+      "lng": 90.3864,
+      "radius_m": 250,
+      "source": "https://www.bssnews.net/js-session/401176/news"
+    },
+    {
+      "id": "flood-green-road-north",
+      "type": "flood",
+      "name": "Green Road (Farmgate end)",
+      "lat": 23.755,
+      "lng": 90.3888,
+      "radius_m": 250,
+      "source": "https://www.bssnews.net/js-session/401176/news"
+    },
+    {
+      "id": "flood-shantinagar",
+      "type": "flood",
+      "name": "Shantinagar",
+      "lat": 23.7392,
+      "lng": 90.414,
+      "radius_m": 300,
+      "source": "https://www.bssnews.net/js-session/401176/news"
+    },
+    {
+      "id": "flood-west-malibagh",
+      "type": "flood",
+      "name": "West Malibagh",
+      "lat": 23.7474,
+      "lng": 90.4116,
+      "radius_m": 300,
+      "source": "https://www.bssnews.net/js-session/401176/news"
+    },
+    {
+      "id": "flood-kazipara",
+      "type": "flood",
+      "name": "Kazipara (Begum Rokeya Sarani)",
+      "lat": 23.7971,
+      "lng": 90.373,
+      "radius_m": 300,
+      "source": "https://en.prothomalo.com/amp/story/bangladesh/city/usi0knq887"
+    },
+    {
+      "id": "blockade-shahbagh",
+      "type": "blockade",
+      "name": "Shahbagh intersection",
+      "lat": 23.7381,
+      "lng": 90.3958,
+      "radius_m": 250,
+      "source": "https://en.ittefaq.com.bd/14056/road-blockades-cause-severe-traffic-congestion-in",
+      "note": "Source names Shahbagh as a congested area during the Press Club sit-in, not as the blockade point itself."
+    },
+    {
+      "id": "blockade-press-club",
+      "type": "blockade",
+      "name": "Jatiya Press Club (Topkhana Road)",
+      "lat": 23.7305,
+      "lng": 90.408,
+      "radius_m": 250,
+      "source": "https://en.ittefaq.com.bd/14056/road-blockades-cause-severe-traffic-congestion-in"
+    },
+    {
+      "id": "blockade-paltan",
+      "type": "blockade",
+      "name": "Paltan",
+      "lat": 23.7336,
+      "lng": 90.412,
+      "radius_m": 250,
+      "source": "https://en.ittefaq.com.bd/14056/road-blockades-cause-severe-traffic-congestion-in",
+      "note": "Source names Paltan as a congested area during the Press Club sit-in, not as the blockade point itself."
+    },
+    {
+      "id": "blockade-science-lab",
+      "type": "blockade",
+      "name": "Science Lab intersection",
+      "lat": 23.7387,
+      "lng": 90.3835,
+      "radius_m": 250,
+      "source": "https://www.dhakatribune.com/bangladesh/415141/student-protests-leave-dhaka-in-traffic-gridlock"
+    },
+    {
+      "id": "blockade-farmgate",
+      "type": "blockade",
+      "name": "Farmgate intersection",
+      "lat": 23.758,
+      "lng": 90.3895,
+      "radius_m": 250,
+      "source": "https://asianews.network/?p=249281",
+      "note": "Source page is behind a bot check; place taken from search summaries of the article, not verified from its text."
+    },
+    {
+      "id": "blockade-karwan-bazar",
+      "type": "blockade",
+      "name": "Karwan Bazar intersection",
+      "lat": 23.7513,
+      "lng": 90.3928,
+      "radius_m": 250,
+      "source": "https://asianews.network/?p=249281",
+      "note": "Source page is behind a bot check; place taken from search summaries of the article, not verified from its text."
+    },
+    {
+      "id": "blockade-manik-mia-west",
+      "type": "blockade",
+      "name": "Manik Mia Avenue (west)",
+      "lat": 23.7583,
+      "lng": 90.3765,
+      "radius_m": 250,
+      "source": "https://www.dhakatribune.com/bangladesh/415141/student-protests-leave-dhaka-in-traffic-gridlock"
+    },
+    {
+      "id": "blockade-manik-mia-east",
+      "type": "blockade",
+      "name": "Manik Mia Avenue (east)",
+      "lat": 23.7585,
+      "lng": 90.3815,
+      "radius_m": 250,
+      "source": "https://www.dhakatribune.com/bangladesh/415141/student-protests-leave-dhaka-in-traffic-gridlock"
+    },
+    {
+      "id": "crime-sadarghat",
+      "type": "crime",
+      "name": "Sadarghat",
+      "lat": 23.7059,
+      "lng": 90.4093,
+      "radius_m": 300,
+      "source": "https://www.dhakatribune.com/bangladesh/crime/418704/dhaka%E2%80%99s-pre-dawn-streets-become-hotspots-for"
+    },
+    {
+      "id": "crime-gabtoli",
+      "type": "crime",
+      "name": "Gabtoli",
+      "lat": 23.781,
+      "lng": 90.344,
+      "radius_m": 300,
+      "source": "https://www.dhakatribune.com/bangladesh/crime/418704/dhaka%E2%80%99s-pre-dawn-streets-become-hotspots-for"
+    },
+    {
+      "id": "crime-gulistan",
+      "type": "crime",
+      "name": "Gulistan",
+      "lat": 23.724,
+      "lng": 90.412,
+      "radius_m": 300,
+      "source": "https://www.dhakatribune.com/bangladesh/crime/418704/dhaka%E2%80%99s-pre-dawn-streets-become-hotspots-for"
+    },
+    {
+      "id": "crime-sayedabad",
+      "type": "crime",
+      "name": "Sayedabad",
+      "lat": 23.7152,
+      "lng": 90.4275,
+      "radius_m": 300,
+      "source": "https://www.dhakatribune.com/bangladesh/crime/418704/dhaka%E2%80%99s-pre-dawn-streets-become-hotspots-for"
+    },
+    {
+      "id": "crime-mohakhali",
+      "type": "crime",
+      "name": "Mohakhali",
+      "lat": 23.7779,
+      "lng": 90.399,
+      "radius_m": 300,
+      "source": "https://www.dhakatribune.com/bangladesh/crime/418704/dhaka%E2%80%99s-pre-dawn-streets-become-hotspots-for"
+    },
+    {
+      "id": "crime-kamalapur",
+      "type": "crime",
+      "name": "Kamalapur",
+      "lat": 23.7305,
+      "lng": 90.4269,
+      "radius_m": 300,
+      "source": "https://www.dhakatribune.com/bangladesh/crime/418704/dhaka%E2%80%99s-pre-dawn-streets-become-hotspots-for"
+    },
+    {
+      "id": "accident-jatrabari",
+      "type": "accident",
+      "name": "Jatrabari",
+      "lat": 23.7094,
+      "lng": 90.4338,
+      "radius_m": 300,
+      "source": "https://en.prothomalo.com/bangladesh/accident/yv5tz64e2x"
+    },
+    {
+      "id": "accident-demra",
+      "type": "accident",
+      "name": "Demra (Staff Quarter)",
+      "lat": 23.7197,
+      "lng": 90.4905,
+      "radius_m": 300,
+      "source": "https://en.prothomalo.com/bangladesh/accident/yv5tz64e2x"
+    },
+    {
+      "id": "accident-mohammadpur",
+      "type": "accident",
+      "name": "Mohammadpur bus stand",
+      "lat": 23.757,
+      "lng": 90.3617,
+      "radius_m": 300,
+      "source": "https://en.prothomalo.com/bangladesh/accident/yv5tz64e2x"
+    },
+    {
+      "id": "accident-kuril-bishwaroad",
+      "type": "accident",
+      "name": "Kuril Bishwaroad",
+      "lat": 23.8212,
+      "lng": 90.4195,
+      "radius_m": 300,
+      "source": "https://en.prothomalo.com/bangladesh/accident/yv5tz64e2x"
+    },
+    {
+      "id": "accident-airport-road-kakoli",
+      "type": "accident",
+      "name": "Airport Road (Kakoli)",
+      "lat": 23.7925,
+      "lng": 90.4006,
+      "radius_m": 400,
+      "source": "https://en.prothomalo.com/bangladesh/accident/yv5tz64e2x"
+    },
+    {
+      "id": "accident-airport-road-stadium",
+      "type": "accident",
+      "name": "Airport Road (Army Stadium)",
+      "lat": 23.803,
+      "lng": 90.4025,
+      "radius_m": 400,
+      "source": "https://en.prothomalo.com/bangladesh/accident/yv5tz64e2x"
+    },
+    {
+      "id": "accident-airport-road-shewra",
+      "type": "accident",
+      "name": "Airport Road (Shewra)",
+      "lat": 23.811,
+      "lng": 90.4038,
+      "radius_m": 400,
+      "source": "https://en.prothomalo.com/bangladesh/accident/yv5tz64e2x"
+    },
+    {
+      "id": "accident-airport-road-khilkhet",
+      "type": "accident",
+      "name": "Airport Road (Khilkhet)",
+      "lat": 23.8301,
+      "lng": 90.4195,
+      "radius_m": 400,
+      "source": "https://en.prothomalo.com/bangladesh/accident/yv5tz64e2x"
+    },
+    {
+      "id": "accident-airport-road-airport",
+      "type": "accident",
+      "name": "Airport Road (Airport)",
+      "lat": 23.8526,
+      "lng": 90.4074,
+      "radius_m": 400,
+      "source": "https://en.prothomalo.com/bangladesh/accident/yv5tz64e2x"
+    },
+    {
+      "id": "terminal-fulbaria",
+      "type": "terminal",
+      "name": "Fulbaria bus terminal",
+      "lat": 23.7228,
+      "lng": 90.4103,
+      "radius_m": 250,
+      "source": "https://en.prothomalo.com/bangladesh/Tk-16.5m-extorted-from-Dhaka-s-transport-sector"
+    },
+    {
+      "id": "terminal-gulistan",
+      "type": "terminal",
+      "name": "Gulistan bus stand",
+      "lat": 23.7228,
+      "lng": 90.4119,
+      "radius_m": 250,
+      "source": "https://en.prothomalo.com/bangladesh/Tk-16.5m-extorted-from-Dhaka-s-transport-sector"
+    },
+    {
+      "id": "terminal-sayedabad",
+      "type": "terminal",
+      "name": "Sayedabad bus terminal",
+      "lat": 23.7152,
+      "lng": 90.4275,
+      "radius_m": 300,
+      "source": "https://en.prothomalo.com/bangladesh/Tk-16.5m-extorted-from-Dhaka-s-transport-sector"
+    },
+    {
+      "id": "terminal-mohakhali",
+      "type": "terminal",
+      "name": "Mohakhali inter-district bus terminal",
+      "lat": 23.773,
+      "lng": 90.4016,
+      "radius_m": 300,
+      "source": "https://en.prothomalo.com/bangladesh/Tk-16.5m-extorted-from-Dhaka-s-transport-sector"
+    },
+    {
+      "id": "terminal-mirpur",
+      "type": "terminal",
+      "name": "Mirpur 10 bus station",
+      "lat": 23.8074,
+      "lng": 90.3682,
+      "radius_m": 300,
+      "source": "https://en.prothomalo.com/bangladesh/Tk-16.5m-extorted-from-Dhaka-s-transport-sector",
+      "note": "Source says only 'Mirpur bus terminals' without a location; Mirpur 10 chosen as the main hub. Source is from 2019."
+    }
+  ]
+}

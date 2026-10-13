@@ -2,54 +2,11 @@
 
 Oct 12, 2026 · @Jubayer Ahmed Sojib
 
-এই tab এ ধারণা আর গবেষণা; website বানানোর পুরো নির্দেশনা আছে Implementation Spec (Claude Code) tab এ।
+এই file এ ধারণা আর গবেষণা; website বানানোর পুরো নির্দেশনা আছে [`SPEC.md`](SPEC.md) এ।
 
 ## Problem Statement
 
-**Title:** Context-Aware Priority Route Finding in Dhaka City Using Search Algorithms
-
-### Background
-
-Dhaka is one of the most congested cities in the world. Travel time between two points varies drastically with time of day, weather, and social events.
-
-Heavy rain causes waterlogging that makes some roads slow or impassable. Processions, rallies, and political gatherings block roads with little warning. Some areas carry safety risks such as extortion or crime, especially at night.
-
-As a result, the route that is shortest in distance is often neither the fastest nor the safest.
-
-### Objective
-
-Given a source, a destination, a departure time, current city conditions, and a traveler profile, find a route that minimizes travel time while keeping the journey safe. Example profiles are an ambulance, a person late for an important meeting, and a regular commuter.
-
-Implement multiple search algorithms on this problem and compare their performance.
-
-### Search problem formulation
-
-- **State:** the traveler's current intersection (optionally with current time)
-- **Initial state:** the source node (e.g., Mirpur 10)
-- **Actions:** move to an adjacent intersection via a currently passable road
-- **Transition model:** traversing edge (u, v) moves the traveler to v and advances the clock by that edge's travel time
-- **Goal test:** current node = destination (e.g., Dhaka Medical College Hospital)
-- **Path cost:** sum of dynamic edge costs
-
-### Edge cost model
-
-```latex
-\begin{aligned}
-\text{cost}(u,v,t) &= T(u,v,t) \times \big(1 + \beta \, U(u,v)\big) + \lambda \times \big(R_{crime}(t) + R_{accident}(t)\big) \\
-T(u,v,t) &= \frac{L(u,v)}{v_{free}(u,v)} \times F_{traffic}(t) \times F_{rain} \times F_{work}
-\end{aligned}
-```
-
-T is travel time in minutes, and every factor in it is at least 1. U (0 to 1) is an edge's uncertainty, β is the traveler's reliability weight, and λ converts risk scores into minutes. An edge's cost is ∞ if a procession blocks it or its flood depth exceeds the vehicle's limit.
-
-### Algorithms to compare
-
-- **Uninformed:** BFS, DFS, Iterative Deepening, Uniform Cost Search, Bidirectional Search
-- **Informed:** Greedy Best-First Search, A\*
-
-### Evaluation
-
-Run every algorithm across four scenarios: normal, peak hour, heavy rain, and procession. Compare path cost, nodes expanded, runtime, maximum frontier size (memory), optimality, and completeness.
+আনুষ্ঠানিক problem statement, research question আর experiment design আছে [`PROBLEM_STATEMENT.md`](PROBLEM_STATEMENT.md) এ। এই file এ আছে তার পেছনের ধারণা, বাস্তব data আর source।
 
 ## ১. Dhaka কে graph হিসেবে দেখা
 
@@ -104,12 +61,14 @@ Factor কখনো ১ এর নিচে নামে না, তাই A\* �
 
 ```latex
 \begin{aligned}
-\text{cost}(u,v,t) &= T(u,v,t) \times \big(1 + \beta \, U(u,v)\big) + \lambda \times \big(R_{crime}(t) + R_{accident}(t)\big) \\
+\text{cost}(u,v,t) &= T(u,v,t) \times \big(1 + \beta \, U(u,v)\big) + \lambda \times \big(R_{crime}(t) + R_{accident}(t)\big) \times \frac{L(u,v)}{L_{ref}} \\
 T(u,v,t) &= \frac{L(u,v)}{v_{free}(u,v)} \times F_{traffic}(t, day) \times F_{rain} \times F_{work}
 \end{aligned}
 ```
 
-অবরোধ চললে বা পানির উচ্চতা গাড়ির সীমা ছাড়ালে cost = ∞। U হলো edge এর অনিশ্চয়তা: অবরোধ-প্রবণ মোড়ের edge এ ১, বর্ষাকালে জলাবদ্ধতা hotspot এ ০.৫, বাকি সব ০। v\_free আসবে OSM এর road type থেকে (যেমন primary ৩০ km/h, residential ১৫ km/h), এটাও অনুমান।
+অবরোধ চললে বা বৃষ্টির band গাড়ির সীমা ছাড়ালে cost = ∞।
+
+Risk কে L / L\_ref দিয়ে গুণ করা হয়েছে, কারণ OSM একটা hotspot এলাকাকে অনেক ছোট ছোট edge এ ভাগ করে। প্রতি edge এ একবার করে risk যোগ করলে penalty নির্ভর করত edge কয়টা তার উপর, আসল ঝুঁকিপূর্ণ দূরত্বের উপর না। L\_ref = ৫০০ m, মানে মোটামুটি একটা hotspot (radius ২৫০–৩০০ m) একবার পার হওয়ার দূরত্ব। U হলো edge এর অনিশ্চয়তা: অবরোধ-প্রবণ মোড়ের edge এ ১, বর্ষাকালে জলাবদ্ধতা hotspot এ ০.৫, বাকি সব ০। v\_free আসবে OSM এর road type থেকে (যেমন primary ৩০ km/h, residential ১৫ km/h), এটাও অনুমান।
 
 ### Website এ weight গুলো কীভাবে dynamic থাকবে
 
@@ -133,7 +92,7 @@ Road graph আসবে OSMnx থেকে, আর hotspot গুলো উপ�
 | সাধারণ যাত্রী | সময় | 1 | 0.3 | কোনো বিশেষ নিয়ম নেই |
 | Bus/truck | সময় | 1 | 0.3 | terminal এর edge এ ×১.৫ |
 
-λ এর unit মিনিট প্রতি risk unit, তাই λ × R সরাসরি সময়ের সাথে যোগ হয়। যেমন রাতে একা যাত্রী ভোররাতের ছিনতাই hotspot (R\_crime = ৫) পার হলে ২৫ মিনিটের সমান penalty পায়।
+λ এর unit মিনিট প্রতি risk unit, তাই λ × R সরাসরি সময়ের সাথে যোগ হয়। যেমন রাতে একা যাত্রী ভোররাতের ছিনতাই hotspot (R\_crime = ৫) এর ভেতর দিয়ে ৫০০ m গেলে ৫ × ৫ × (৫০০ ÷ ৫০০) = ২৫ মিনিটের সমান penalty পায়।
 
 β নির্ভরযোগ্যতা নিয়ন্ত্রণ করে: U = ১ এমন edge এ meeting যাত্রীর সময় দ্বিগুণ ধরা হয়। সব সংখ্যা শুরুর অনুমান, `weights.yaml` থেকে বদলানো যাবে।
 
@@ -175,7 +134,7 @@ h(n) = \frac{\text{straight-line (haversine) distance}(n, goal)}{v_{max}}
 
 ## ৬. Experiment কীভাবে সাজাবে
 
-চারটা scenario তে একই source আর destination নিয়ে সব algorithm চালাতে হবে।
+চারটা scenario তে একই source আর destination নিয়ে সব algorithm চালাতে হবে। Demo র জন্য এক জোড়া route যথেষ্ট, কিন্তু report এর তুলনা টেবিলের জন্য পাঁচটা নির্দিষ্ট route আর fixed seed এর random node pair নিয়ে প্রতিটা যাত্রী profile এ চালাও (বিস্তারিত [`PROBLEM_STATEMENT.md`](PROBLEM_STATEMENT.md) এর ৯ নম্বর অংশে)।
 
 | Scenario | কী বদলায় |
 | --- | --- |
@@ -186,15 +145,17 @@ h(n) = \frac{\text{straight-line (haversine) distance}(n, goal)}{v_{max}}
 
 প্রতিটা scenario এর জন্য এই টেবিলটা পূরণ করো:
 
-| Algorithm | Path | Cost (মিনিট সমতুল্য) | Nodes expanded | Runtime (ms) | Max frontier size |
-| --- | --- | --- | --- | --- | --- |
-| BFS |  |  |  |  |  |
-| DFS |  |  |  |  |  |
-| IDS |  |  |  |  |  |
-| UCS |  |  |  |  |  |
-| Bidirectional |  |  |  |  |  |
-| Greedy |  |  |  |  |  |
-| A\* |  |  |  |  |  |
+| Algorithm | Path | Cost (মিনিট সমতুল্য) | Cost ÷ UCS cost | Nodes expanded | Runtime (ms) | Max frontier size |
+| --- | --- | --- | --- | --- | --- | --- |
+| BFS |  |  |  |  |  |  |
+| DFS |  |  |  |  |  |  |
+| IDS |  |  |  |  |  |  |
+| UCS |  |  | 1.00 |  |  |  |
+| Bidirectional |  |  |  |  |  |  |
+| Greedy |  |  |  |  |  |  |
+| A\* |  |  |  |  |  |  |
+
+"Cost ÷ UCS cost" হলো suboptimality ratio: ১.০০ মানে optimal, ১.৩০ মানে ৩০% খারাপ।
 
 ### যে observation গুলো আশা করা যায়
 
@@ -204,7 +165,7 @@ h(n) = \frac{\text{straight-line (haversine) distance}(n, goal)}{v_{max}}
 
 ## ৭. বাড়তি নম্বরের জন্য extension
 
-- **Dynamic replanning:** যাত্রাপথে হঠাৎ নতুন মিছিল শুরু হলে বর্তমান অবস্থান থেকে আবার A\* চালানো যায়। আরও উন্নত পদ্ধতি হলো D\* Lite। এটা এখন website এর মূল feature, বিস্তারিত Implementation Spec tab এ।
+- **Dynamic replanning:** যাত্রাপথে হঠাৎ নতুন মিছিল শুরু হলে বর্তমান অবস্থান থেকে আবার A\* চালানো যায়। আরও উন্নত পদ্ধতি হলো D\* Lite। এটা এখন website এর মূল feature, বিস্তারিত [`SPEC.md`](SPEC.md) এর ১০ নম্বর অংশে।
 - **Time-dependent cost:** ৫:৩০ এ রওনা দিলে যে রাস্তায় ৬টায় ঢুকবে, সেখানে ৬টার jam ধরতে হবে। এজন্য state এ location এর সাথে সময়ও রাখতে হবে।
 
 ## Sources

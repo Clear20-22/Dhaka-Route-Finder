@@ -1,0 +1,8 @@
+osmnx>=2.0          # networkx, geopandas সহ আসে
+scikit-learn        # unprojected graph এ nearest node খুঁজতে OSMnx এর লাগে
+fastapi
+uvicorn[standard]
+pydantic>=2
+pyyaml
+pytest
+httpx               # FastAPI এর TestClient এর জন্য
